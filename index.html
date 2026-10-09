@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="Track expenses in different currencies and convert them into your preferred home currency using live exchange rates.">
+    <title>Expense Tracker | Live Currency Conversion</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <header class="header">
+        <div class="header-content">
+            <div class="brand">
+                <h1>Expense Tracker</h1>
+                <p>Track spending across currencies</p>
+            </div>
+
+            <!-- Requirement 1: Select the home currency for expense conversions. -->
+            <div class="currency-control">
+                <label for="home-currency">Home currency</label>
+                <select id="home-currency" name="homeCurrency">
+                    <option value="KES" selected>KES — Kenyan Shilling</option>
+                    <option value="USD">USD — US Dollar</option>
+                    <option value="EUR">EUR — Euro</option>
+                    <option value="GBP">GBP — British Pound</option>
+
+                </select>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <!-- Requirement 2: Display loading, success, and error messages for exchange rates. -->
+        <div id="app-status" class="status-banner" role="status" aria-live="polite">
+            Loading live exchange rates...
+        </div>
+
+        <!-- Requirement 3: Display the running converted total and expense statistics. -->
+        <section class="dashboard" aria-label="Expense summary">
+            <div class="summary-card total-card">
+                <p>Total expenses</p>
+                <h2 id="total-amount">KES 0.00</h2>
+                <span>Converted to your home currency</span>
+            </div>
+
+            <div class="summary-card">
+                <p>Total transactions</p>
+                <h2 id="expense-count">0</h2>
+                <span>Expenses recorded</span>
+            </div>
+
+            <div class="summary-card">
+                <p>Categories used</p>
+                <h2 id="category-count">0</h2>
+                <span>Different spending categories</span>
+            </div>
+        </section>
+
+        <!-- Requirement 4: Provide a form to record expenses by description, amount, currency, and category. -->
+        <section class="expense-form-section">
+            <div class="section-heading">
+                <h2>Add an expense</h2>
+                <p>Record a purchase in the currency you paid with.</p>
+            </div>
+
+            <form id="expense-form">
+                <div class="form-group">
+                    <label for="description">Description</label>
+                    <input type="text" id="description" name="description" placeholder="e.g. Lunch, hotel booking"
+                        required maxlength="100">
+                </div>
+
+                <div class="form-group">
+                    <label for="amount">Amount</label>
+                    <input type="number" id="amount" name="amount" placeholder="0.00" min="0.01" step="0.01" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="currency">Expense currency</label>
+                    <select id="currency" name="currency" required>
+                        <option value="KES" selected>KES — Kenyan Shilling</option>
+                        <option value="USD">USD — US Dollar</option>
+                        <option value="EUR">EUR — Euro</option>
+                        <option value="GBP">GBP — British Pound</option>
+
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="category">Category</label>
+                    <select id="category" name="category" required>
+                        <option value="">Select a category</option>
+                        <option value="Food">Food</option>
+                        <option value="Transport">Transport</option>
+                        <option value="Shopping">Shopping</option>
+
+                    </select>
+                </div>
+
+                <button type="submit" class="primary-button">
+                    Add Expense
+                </button>
+            </form>
+        </section>
+
+        <!-- Requirement 5: Display expenses, original and converted amounts, and support category filtering and deletion. -->
+        <section class="expenses-section">
+            <div class="expenses-header">
+                <div class="section-heading">
+                    <h2>Your expenses</h2>
+                    <p>View original amounts and their converted values.</p>
+                </div>
+
+                <div class="filter-control">
+                    <label for="category-filter">Filter by category</label>
+                    <select id="category-filter" name="categoryFilter">
+                        <option value="all">All categories</option>
+                        <option value="Food">Food</option>
+                        <option value="Transport">Transport</option>
+                        <option value="Shopping">Shopping</option>
+
+                    </select>
+                </div>
+            </div>
+
+            <p class="expense-count-label">
+                Showing <span id="visible-count">0</span> expenses
+            </p>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th scope="col">Description</th>
+                            <th scope="col">Category</th>
+                            <th scope="col">Original amount</th>
+                            <th scope="col">Converted amount</th>
+                            <th scope="col">Action</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="expense-list">
+                        <tr>
+                            <td colspan="5">No expenses recorded yet.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <p id="rate-updated" class="rate-updated">
+                Exchange rate information will appear here.
+            </p>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <p>Expense Tracker &copy; 2026</p>
+        <p>Currency conversions use exchange rates retrieved from a REST API.</p>
+    </footer>
+
+    <!-- Requirement 6: Load the JavaScript application as an ES module. -->
+    <script type="module" src="src/main.js"></script>
+</body>
+
+</html>
