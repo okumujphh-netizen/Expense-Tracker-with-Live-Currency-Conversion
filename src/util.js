@@ -1,4 +1,3 @@
-/*
 // Helper tools for handling browser storage, status notifications, and currency formatting.
 
 // Transforms a raw number into a formatted currency text string
@@ -11,7 +10,7 @@ export function formatCurrency(amount, currencyCode = 'KES') {
         maximumFractionDigits: 2
     }).format(numericAmount);
 }
- */   
+ 
 
 // Unique browser storage identifiers for this project
 const STORAGE_KEYS = {
@@ -39,8 +38,7 @@ export function getStoredHomeCurrency() {
 export function saveHomeCurrency(currency) {
     localStorage.setItem(STORAGE_KEYS.HOME_CURRENCY, currency);
 }
-*/    
-/*
+
 // Modifies the app status banner text and styling dynamically
 export function setAppStatus(message, type = 'info') {
     const statusBanner = document.getElementById('app-status');
@@ -49,4 +47,3 @@ export function setAppStatus(message, type = 'info') {
     statusBanner.textContent = message;
     statusBanner.className = `status-banner ${type}`;
 }
-*/
