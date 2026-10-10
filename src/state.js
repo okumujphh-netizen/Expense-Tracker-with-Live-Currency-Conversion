@@ -91,3 +91,24 @@ export function convertExpenseAmount(amount, expenseCurrency) {
   const amountInBase = amount / rates[expenseCurrency];
   return amountInBase * rates[home];
 }
+
+// --- Dashboard Summary Calculation ---
+
+export function getSummaryStats() {
+  const filtered = getFilteredExpenses();
+  
+  // Calculate total converted sum across all recorded expenses
+  const totalAmount = state.expenses.reduce((sum, item) => {
+    return sum + convertExpenseAmount(Number(item.amount), item.currency);
+  }, 0);
+
+  // Count unique categories used across all expenses
+  const uniqueCategories = new Set(state.expenses.map(item => item.category)).size;
+
+  return {
+    totalAmount: totalAmount,
+    totalCount: state.expenses.length,
+    visibleCount: filtered.length,
+    categoryCount: uniqueCategories
+  };
+}
