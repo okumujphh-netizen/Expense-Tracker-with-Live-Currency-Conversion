@@ -12,7 +12,7 @@ export function formatCurrency(amount, currencyCode = 'KES') {
     }).format(numericAmount);
 }
  */   
-/*
+
 // Unique browser storage identifiers for this project
 const STORAGE_KEYS = {
     EXPENSES: 'eo_tracker_records',
@@ -24,7 +24,7 @@ export function getStoredExpenses() {
     const data = localStorage.getItem(STORAGE_KEYS.EXPENSES);
     return data ? JSON.parse(data) : [];
 }
-/*
+
 // Stores the current expenses array into local storage
 export function saveExpenses(expenses) {
     localStorage.setItem(STORAGE_KEYS.EXPENSES, JSON.stringify(expenses));
@@ -40,7 +40,7 @@ export function saveHomeCurrency(currency) {
     localStorage.setItem(STORAGE_KEYS.HOME_CURRENCY, currency);
 }
 */    
-
+/*
 // Modifies the app status banner text and styling dynamically
 export function setAppStatus(message, type = 'info') {
     const statusBanner = document.getElementById('app-status');
@@ -49,3 +49,4 @@ export function setAppStatus(message, type = 'info') {
     statusBanner.textContent = message;
     statusBanner.className = `status-banner ${type}`;
 }
+*/
