@@ -1,4 +1,4 @@
-// Helper tools for handling browser storage, status notifications, and currency formatting.
+// Helper tools for handling browser storage, status notifications, and currency formatting.sz
 
 // Transforms a raw number into a formatted currency text string
 export function formatCurrency(amount, currencyCode = 'KES') {
