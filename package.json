@@ -1,0 +1,25 @@
+{
+  "name": "expense-tracker-with-live-currency-conversion",
+  "version": "1.0.0",
+  "description": "An expense tracker web application with real-time currency conversion, local storage, and automated unit testing.",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js --testEnvironment=jsdom",
+    "lint": "eslint ."
+  },
+  "keywords": [
+    "expense-tracker",
+    "currency-conversion",
+    "javascript",
+    "jest",
+    "local-storage"
+  ],
+  "author": "Eugene Osano Ogero",
+  "license": "ISC",
+  "devDependencies": {
+    "eslint": "^9.0.0",
+    "jest": "^29.7.0",
+    "jest-environment-jsdom": "^30.5.2"
+  }
+}
