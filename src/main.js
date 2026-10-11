@@ -24,25 +24,38 @@ import {
 } from './ui.js';
 
 // Select the HTML elements used by the application
+
 const expenseForm = document.getElementById('expense-form');
-const descriptionInput = document.getElementById('expense-description');
-const amountInput = document.getElementById('expense-amount');
-const currencyInput = document.getElementById('expense-currency');
-const categoryInput = document.getElementById('expense-category');
+const descriptionInput = document.getElementById('description');
+const amountInput = document.getElementById('amount');
+const currencyInput = document.getElementById('currency');
+const categoryInput = document.getElementById('category');
 const homeCurrencyInput = document.getElementById('home-currency');
 const categoryFilter = document.getElementById('category-filter');
 const expenseList = document.getElementById('expense-list');
 
+
 // Update the displayed expenses, categories and total
+
 function renderApp() {
     const expenses = getExpenses();
     const filteredExpenses = getFilteredExpenses();
     const homeCurrency = getHomeCurrency();
+    const stats = getSummaryStats();
 
-    renderTotal(getSummaryStats().totalAmount, homeCurrency);
+    renderTotal(stats.totalAmount, homeCurrency);
     renderExpenses(filteredExpenses, homeCurrency, getExchangeRates());
     renderCategoryOptions(expenses);
     renderHomeCurrency(homeCurrency);
+
+    document.getElementById('expense-count').textContent =
+        stats.totalCount;
+
+    document.getElementById('category-count').textContent =
+        stats.categoryCount;
+
+    document.getElementById('visible-count').textContent =
+        stats.visibleCount;
 }
 
 // Fetch live exchange rates for the selected home currency
