@@ -74,29 +74,69 @@ export function deleteExpense(id) {
 }
 
 // Converts an expense amount into the current home currency using loaded rates
-export function convertExpenseAmount(amount, expenseCurrency) {
-  const home = state.homeCurrency;
-  
-  // No conversion needed if currencies match
-  if (expenseCurrency === home) {
-    return amount;
-  }
 
-  const rates = state.exchangeRates;
-  if (!rates || !rates[expenseCurrency] || !rates[home]) {
-    return amount; // Fallback if exchange rates aren't loaded yet
-  }
+export function convertExpenseAmount(amount, expenseCurrency) {
+    const home = state.homeCurrency;
+    const numericAmount = Number(amount);
+
+    if (!Number.isFinite(numericAmount) || numericAmount < 0) {
+        return null;
+    }
+
+    // No conversion is needed when both currencies match
+    if (expenseCurrency === home) {
+        return numericAmount;
+    }
+
+    const rates = state.exchangeRates;
+    const expenseRate = rates[expenseCurrency];
+    const homeRate = rates[home];
+
+    // Do not pretend conversion succeeded if rates are unavailable
+    if (
+        !Number.isFinite(expenseRate) ||
+        !Number.isFinite(homeRate) ||
+        expenseRate <= 0 ||
+        homeRate <= 0
+    ) {
+        return null;
+    }
+
+    return (numericAmount / expenseRate) * homeRate;
+}
 
   // Convert amount to base currency, then to target home currency
   const amountInBase = amount / rates[expenseCurrency];
   return amountInBase * rates[home];
-}
+
 
 // --- Dashboard Summary Calculation ---
 
 export function getSummaryStats() {
-  const filtered = getFilteredExpenses();
-  
+    const filtered = getFilteredExpenses();
+
+    const convertedAmounts = state.expenses.map((item) =>
+        convertExpenseAmount(Number(item.amount), item.currency)
+    );
+
+    const totalAmount = convertedAmounts.every(
+        (amount) => amount !== null
+    )
+        ? convertedAmounts.reduce((sum, amount) => sum + amount, 0)
+        : null;
+
+    const uniqueCategories = new Set(
+        state.expenses.map((item) => item.category)
+    ).size;
+
+    return {
+        totalAmount,
+        totalCount: state.expenses.length,
+        visibleCount: filtered.length,
+        categoryCount: uniqueCategories
+    };
+}
+
   // Calculate total converted sum across all recorded expenses
   const totalAmount = state.expenses.reduce((sum, item) => {
     return sum + convertExpenseAmount(Number(item.amount), item.currency);
@@ -111,4 +151,3 @@ export function getSummaryStats() {
     visibleCount: filtered.length,
     categoryCount: uniqueCategories
   };
-}
