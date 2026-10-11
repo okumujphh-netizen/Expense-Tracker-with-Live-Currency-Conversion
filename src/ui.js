@@ -1,18 +1,21 @@
 
-import { formatCurrency } from './util.js';
-
-// Display a status message to the user
-export function renderStatus(message, type = 'info') {
-    const statusBanner = document.getElementById('app-status');
-
-    if (!statusBanner) return;
-
-    statusBanner.textContent = message;
-    statusBanner.className = `status-banner ${type}`;
-}
 
 // Display the total expenses in the selected home currency
+export function renderTotal(total, homeCurrency = 'KES') {
+    const totalElement = document.getElementById('total-amount');
 
+    if (!totalElement) return;
+
+    // Avoid displaying a misleading total when conversion fails
+    if (total === null || !Number.isFinite(total)) {
+        totalElement.textContent = 'Unavailable';
+        return;
+    }
+
+    totalElement.textContent = formatCurrency(total, homeCurrency);
+}
+
+// Display expenses and their converted amounts
 export function renderExpenses(
     expenses,
     homeCurrency = 'KES',
@@ -24,7 +27,8 @@ export function renderExpenses(
 
     expenseList.replaceChildren();
 
-    if (expenses.length === 0) {
+    // Display a message when there are no expenses
+    if (!expenses || expenses.length === 0) {
         const row = document.createElement('tr');
         const cell = document.createElement('td');
 
@@ -39,19 +43,24 @@ export function renderExpenses(
     expenses.forEach((expense) => {
         const row = document.createElement('tr');
 
+        // Expense description
         const descriptionCell = document.createElement('td');
-        descriptionCell.textContent = expense.description;
+        descriptionCell.textContent = expense.description ?? '';
 
+        // Expense category
         const categoryCell = document.createElement('td');
-        categoryCell.textContent = expense.category;
+        categoryCell.textContent = expense.category ?? '';
 
+        // Original amount and currency
         const originalCell = document.createElement('td');
         originalCell.textContent = formatCurrency(
             expense.amount,
             expense.currency
         );
 
+        // Amount converted into the selected home currency
         const convertedCell = document.createElement('td');
+
         const amount = Number(expense.amount);
         const homeRate = exchangeRates[homeCurrency];
         const expenseRate = exchangeRates[expense.currency];
@@ -66,14 +75,14 @@ export function renderExpenses(
         ) {
             const convertedValue = (amount / expenseRate) * homeRate;
 
-            convertedCell.textContent = formatCurrency(
-                convertedValue,
-                homeCurrency
-            );
+            convertedCell.textContent = Number.isFinite(convertedValue)
+                ? formatCurrency(convertedValue, homeCurrency)
+                : 'Unavailable';
         } else {
             convertedCell.textContent = 'Unavailable';
         }
 
+        // Delete expense button
         const actionCell = document.createElement('td');
         const deleteButton = document.createElement('button');
 
@@ -84,6 +93,7 @@ export function renderExpenses(
 
         actionCell.appendChild(deleteButton);
 
+        // Add all cells to the row
         row.append(
             descriptionCell,
             categoryCell,
@@ -96,7 +106,6 @@ export function renderExpenses(
     });
 }
 
-
 // Populate the category filter with unique expense categories
 export function renderCategoryOptions(expenses) {
     const categoryFilter = document.getElementById('category-filter');
@@ -104,24 +113,38 @@ export function renderCategoryOptions(expenses) {
     if (!categoryFilter) return;
 
     const selectedCategory = categoryFilter.value;
+
     const categories = [
-        ...new Set(expenses.map((expense) => expense.category))
-    ].filter(Boolean).sort();
+        ...new Set(
+            (expenses || []).map((expense) => expense.category)
+        )
+    ]
+        .filter(
+            (category) =>
+                typeof category === 'string' && category.trim() !== ''
+        )
+        .sort();
 
     categoryFilter.replaceChildren();
 
+    // Add the option to display every category
     const allOption = document.createElement('option');
     allOption.value = 'all';
     allOption.textContent = 'All categories';
+
     categoryFilter.appendChild(allOption);
 
+    // Add each unique category
     categories.forEach((category) => {
         const option = document.createElement('option');
+
         option.value = category;
         option.textContent = category;
+
         categoryFilter.appendChild(option);
     });
 
+    // Preserve the selected category when it still exists
     categoryFilter.value = categories.includes(selectedCategory)
         ? selectedCategory
         : 'all';
@@ -140,7 +163,9 @@ export function renderHomeCurrency(currency) {
 export function renderLoading(isLoading) {
     const loadingIndicator = document.getElementById('loading-indicator');
 
+    // The HTML currently may not include a loading indicator
     if (!loadingIndicator) return;
 
     loadingIndicator.hidden = !isLoading;
 }
+

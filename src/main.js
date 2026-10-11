@@ -1,4 +1,5 @@
 
+
 import { fetchExchangeRates } from './api.js';
 
 import {
@@ -23,8 +24,7 @@ import {
     renderLoading
 } from './ui.js';
 
-// Select the HTML elements used by the application
-
+// HTML elements
 const expenseForm = document.getElementById('expense-form');
 const descriptionInput = document.getElementById('description');
 const amountInput = document.getElementById('amount');
@@ -34,9 +34,41 @@ const homeCurrencyInput = document.getElementById('home-currency');
 const categoryFilter = document.getElementById('category-filter');
 const expenseList = document.getElementById('expense-list');
 
+const totalAmountElement = document.getElementById('total-amount');
+const expenseCount = document.getElementById('expense-count');
+const categoryCount = document.getElementById('category-count');
+const visibleCount = document.getElementById('visible-count');
 
-// Update the displayed expenses, categories and total
+// Check that all required HTML elements exist
+function hasRequiredElements() {
+    const elements = [
+        expenseForm,
+        descriptionInput,
+        amountInput,
+        currencyInput,
+        categoryInput,
+        homeCurrencyInput,
+        categoryFilter,
+        expenseList,
+        totalAmountElement,
+        expenseCount,
+        categoryCount,
+        visibleCount
+    ];
 
+    const missingElement = elements.some((element) => !element);
+
+    if (missingElement) {
+        console.error(
+            'Required HTML elements are missing. Check the IDs in index.html.'
+        );
+        return false;
+    }
+
+    return true;
+}
+
+// Render the current application state
 function renderApp() {
     const expenses = getExpenses();
     const filteredExpenses = getFilteredExpenses();
@@ -44,18 +76,19 @@ function renderApp() {
     const stats = getSummaryStats();
 
     renderTotal(stats.totalAmount, homeCurrency);
-    renderExpenses(filteredExpenses, homeCurrency, getExchangeRates());
+
+    renderExpenses(
+        filteredExpenses,
+        homeCurrency,
+        getExchangeRates()
+    );
+
     renderCategoryOptions(expenses);
     renderHomeCurrency(homeCurrency);
 
-    document.getElementById('expense-count').textContent =
-        stats.totalCount;
-
-    document.getElementById('category-count').textContent =
-        stats.categoryCount;
-
-    document.getElementById('visible-count').textContent =
-        stats.visibleCount;
+    expenseCount.textContent = stats.totalCount;
+    categoryCount.textContent = stats.categoryCount;
+    visibleCount.textContent = stats.visibleCount;
 }
 
 // Fetch live exchange rates for the selected home currency
@@ -90,21 +123,28 @@ function handleAddExpense(event) {
     event.preventDefault();
 
     const description = descriptionInput.value.trim();
-    const amount = Number(amountInput.value);
+    const amountText = amountInput.value.trim();
+    const amount = Number(amountText);
     const currency = currencyInput.value;
     const category = categoryInput.value;
 
     if (!description || !currency || !category) {
-        renderStatus('Please complete all expense fields.', 'error');
+        renderStatus(
+            'Please complete all expense fields.',
+            'error'
+        );
         return;
     }
 
     if (
-        amountInput.value.trim() === '' ||
+        amountText === '' ||
         !Number.isFinite(amount) ||
         amount <= 0
     ) {
-        renderStatus('Enter an amount greater than zero.', 'error');
+        renderStatus(
+            'Enter an amount greater than zero.',
+            'error'
+        );
         return;
     }
 
@@ -116,6 +156,7 @@ function handleAddExpense(event) {
     });
 
     expenseForm.reset();
+
     renderApp();
 
     renderStatus('Expense added successfully.', 'success');
@@ -123,9 +164,17 @@ function handleAddExpense(event) {
 
 // Handle clicks on Delete buttons
 function handleExpenseListClick(event) {
-    const button = event.target.closest('.delete-expense');
+    const target = event.target;
 
-    if (!button) return;
+    if (!(target instanceof Element)) {
+        return;
+    }
+
+    const button = target.closest('.delete-expense');
+
+    if (!button) {
+        return;
+    }
 
     deleteExpense(button.dataset.id);
     renderApp();
@@ -139,7 +188,7 @@ function handleCategoryChange() {
     renderApp();
 }
 
-// Change the home currency and fetch updated exchange rates
+// Change home currency and fetch updated rates
 async function handleHomeCurrencyChange() {
     const currency = homeCurrencyInput.value;
 
@@ -155,13 +204,19 @@ async function handleHomeCurrencyChange() {
     await loadExchangeRates();
 }
 
-// Connect the HTML elements to their event handlers
+// Register event listeners
 function registerEventListeners() {
     expenseForm.addEventListener('submit', handleAddExpense);
 
-    expenseList.addEventListener('click', handleExpenseListClick);
+    expenseList.addEventListener(
+        'click',
+        handleExpenseListClick
+    );
 
-    categoryFilter.addEventListener('change', handleCategoryChange);
+    categoryFilter.addEventListener(
+        'change',
+        handleCategoryChange
+    );
 
     homeCurrencyInput.addEventListener(
         'change',
@@ -169,21 +224,9 @@ function registerEventListeners() {
     );
 }
 
-// Start the application
+// Initialize the application
 function initializeApp() {
-    if (
-        !expenseForm ||
-        !descriptionInput ||
-        !amountInput ||
-        !currencyInput ||
-        !categoryInput ||
-        !homeCurrencyInput ||
-        !categoryFilter ||
-        !expenseList
-    ) {
-        console.error(
-            'Required HTML elements are missing. Check the IDs in index.html.'
-        );
+    if (!hasRequiredElements()) {
         return;
     }
 
