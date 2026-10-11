@@ -1,119 +1,142 @@
 # Expense Tracker with Live Currency Conversion
 
-A web application that helps users record, manage, and track their expenses in different currencies. It fetches live exchange rates and converts expenses into a selected home currency, making it easier to understand total spending in one place.
+## Description
+
+Managing personal expenses can become difficult when transactions involve different currencies, especially when exchange rates change over time. This Expense Tracker with Live Currency Conversion is a web application designed to help users record, organize, and monitor their expenses while viewing their spending in a preferred currency. It uses live exchange-rate data to convert expenses between supported currencies, helping users better understand their spending and manage their finances.
+
+## Live Demo
+
+**[View the live application on GitHub Pages](https://okumujphh-netizen.github.io/expense-tracker-with-live-currency-conversion/)**
+
+
 
 ## Features
 
-- **Add expenses:** Record an expense description, amount, currency, and category.
-- **Live currency conversion:** Fetch exchange rates from an external API.
-- **Custom home currency:** Choose between Kenyan Shillings (KES), US Dollars (USD), Euros (EUR), and British Pounds (GBP).
-- **Expense dashboard:** View total spending, total expenses, and the number of categories.
-- **Category filtering:** Filter expenses by category.
-- **Delete expenses:** Remove expenses you no longer need.
-- **Persistent storage:** Save expenses and your preferred home currency in the browser using Local Storage.
-- **Error handling:** Display status messages when exchange rates cannot be loaded.
+- **Add expenses:** Record expenses with a description, amount, currency, and category.
+- **Delete expenses:** Remove expense records that are no longer needed.
+- **Expense categories:** Organize expenses into categories such as Food, Transport, and Shopping.
+- **Category filtering:** Filter the expense list by category.
+- **Live currency conversion:** Retrieve exchange rates from an external REST API and convert expenses into the selected home currency.
+- **Multiple currencies:** Support Kenyan Shillings (KES), US Dollars (USD), Euros (EUR), and British Pounds (GBP).
+- **Expense summaries:** View total spending, the number of expenses, and the number of categories used.
+- **Persistent storage:** Save expenses and the preferred home currency in browser local storage.
+- **Status and error messages:** Display feedback for application operations and exchange-rate errors.
+- **Automated testing:** Use Jest to test JavaScript functionality.
+- **Code quality checks:** Use ESLint to identify potential JavaScript issues.
 
 ## Technologies Used
 
-- HTML5
-- CSS3
-- JavaScript (ES Modules)
-- Fetch API
-- ExchangeRate-API — [open.er-api.com](https://open.er-api.com/)
-- Browser Local Storage
+| Technology | Purpose |
+|---|---|
+| HTML5 | Structures the application interface. |
+| CSS3 | Styles the application and supports responsive layouts. |
+| JavaScript (ES Modules) | Handles application logic, state, API requests, and DOM updates. |
+| REST API — ExchangeRate-API | Provides exchange-rate data for currency conversion. |
+| Browser Local Storage | Persists expenses and the selected home currency. |
+| Jest | Runs automated JavaScript tests. |
+| ESLint | Checks JavaScript code for potential errors and style issues. |
+| Git and GitHub | Version control and source code hosting. |
+| GitHub Pages | Hosts the live application. |
 
-## Project Structure
+### API
 
+The application uses the [Open Exchange Rate API endpoint](https://open.er-api.com/v6/latest) provided by ExchangeRate-API's open endpoint service to retrieve exchange rates.
 
-Expense-Tracker-with-Live-Currency-Conversion/
-├── index.html
-├── style.css
-└── src/
-    ├── api.js
-    ├── main.js
-    ├── state.js
-    └── util.js
+The application requests rates using a base currency and uses the returned rates to convert expense amounts into the user's selected home currency.
 
+### JavaScript Modules
+
+The application separates its responsibilities into modules:
+
+- `src/main.js` — coordinates application behavior and event handling.
+- `src/api.js` — retrieves and validates exchange-rate data.
+- `src/state.js` — manages expenses, currency settings, conversion calculations, and summary data.
+- `src/ui.js` — updates the interface and renders expense records, totals, filters, and status messages.
+- `src/util.js` — provides reusable utility functions, currency formatting, local storage operations, and status handling.
 
 ## Getting Started
 
 ### Prerequisites
 
-- A modern web browser.
-- An internet connection for retrieving live exchange rates.
-- Git, if you want to clone the repository.
+Make sure you have the following installed:
 
-### Installation
+- [Node.js](https://nodejs.org/)
+- npm, which is included with Node.js
+- [Git](https://git-scm.com/)
+- A modern web browser
+
+### Run Locally
 
 1. Clone the repository:
 
-   
-   git clone https://github.com/okumujphh-netizen/Expense-Tracker-with-Live-Currency-Conversion.git
+      git clone https://github.com/okumujphh-netizen/expense-tracker-with-live-currency-conversion.git
    
 
 2. Navigate to the project directory:
 
    
-   cd Expense-Tracker-with-Live-Currency-Conversion
+   cd expense-tracker-with-live-currency-conversion
    
 
-3. Open the project using a local development server. If you use Visual Studio Code, you can use the Live Server extension.
+3. Install the project dependencies:
 
-   Alternatively, if Python 3 is installed, run:
+   
+   npm install
+   
+
+4. Start a local development server. For example, if Python 3 is installed:
 
    
    python3 -m http.server 8000
    
 
-4. Open the following address in your browser:
+5. Open the following address in your browser:
 
    
    http://localhost:8000
    
 
-   Keep the terminal running while using the application.
+The application requires an internet connection to retrieve live exchange rates. Expense records and the preferred home currency are stored in the browser's local storage.
 
-## How to Use
+## Running Tests
 
-1. Select your preferred home currency.
-2. Enter an expense description.
-3. Enter the expense amount and select its currency.
-4. Choose an expense category.
-5. Submit the form to add the expense.
-6. Review the dashboard and converted amounts.
-7. Use the category filter to narrow down your expenses.
-8. Delete an expense when it is no longer needed.
+Run the automated test suite with:
 
-## Currency Conversion
+npm test
 
-The application retrieves exchange rates from the selected home currency. Expense amounts are converted using the available rates so that different currencies can be compared in a common currency.
 
-An internet connection is required to retrieve current rates. If the API is unavailable or rates are missing, some converted amounts or the total may be unavailable.
+Jest runs the project's configured tests to check the behavior of the JavaScript functions and application utilities.
 
-Exchange rates are informational and may differ from rates offered by banks or payment providers.
+## Running ESLint
 
-## Data Storage
+Run the code quality checks with:
 
-Expenses and the selected home currency are stored in the browser's Local Storage. This means data remains available in the same browser on the same device after refreshing the page.
+```bash
+npm run lint
+```
 
-**Note:** Clearing browser storage or using a different browser or device may remove or leave behind access to your saved expenses. The application does not currently use a cloud database.
+ESLint checks the JavaScript code for potential problems according to the project's configuration.
 
-## Future Improvements
+## What I'd Improve With More Time
 
-- Edit existing expenses.
-- Add expense dates and monthly summaries.
-- Display spending charts and reports.
-- Export expenses to CSV.
-- Add budgets and spending limits.
-- Improve offline support and exchange-rate caching.
-- Introduce cloud storage and user accounts.
+With more time, I would improve the application by adding:
+
+- **Spending visualizations:** Charts showing expenses by category and over time.
+- **Monthly budgets:** Allow users to set budgets and track their progress.
+- **More currencies:** Expand currency support beyond the four currently supported currencies.
+- **Export functionality:** Allow users to download their expense records as CSV reports.
+- **Advanced filtering:** Filter expenses by date, amount, and category.
+- **Improved accessibility:** Enhance keyboard navigation, screen-reader support, and interface accessibility.
+- **More comprehensive tests:** Expand unit and integration tests to cover API failures, invalid inputs, currency conversion, and expense management.
+- **Improved data management:** Explore secure account-based storage and synchronization across devices.
 
 ## Author
 
-**John Okumu**
+**Eugene Osano Ogero**
+**John  Paul  Okumu**
 
-GitHub: [@okumujphh-netizen](https://github.com/okumujphh-netizen)
+GitHub: [okumujphh-netizen](https://github.com/okumujphh-netizen)
 
-## License
+---
 
-This project is available for learning and personal development. Add a specific open-source license if you intend to formally permit reuse and redistribution.
+This project was developed as part of my software engineering learning journey, applying JavaScript modules, API integration, browser storage, automated testing, and code quality practices to a practical financial application.
