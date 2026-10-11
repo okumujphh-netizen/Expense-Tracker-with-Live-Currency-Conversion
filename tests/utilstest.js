@@ -59,4 +59,35 @@ describe('Utility Functions', () => {
       saveHomeCurrency('EUR');
       const currency = getStoredHomeCurrency();
       expect(currency).toBe('EUR');
+    });
+  });
+  describe('setAppStatus()', () => {
+    test('updates status banner text content and className correctly', () => {
+      document.body.innerHTML = '<div id="app-status"></div>';
+
+      setAppStatus('Data saved successfully!', 'success');
+
+      const banner = document.getElementById('app-status');
+      expect(banner.textContent).toBe('Data saved successfully!');
+      expect(banner.className).toBe('status-banner success');
+    });
+
+    test('defaults to info type if none is provided', () => {
+      document.body.innerHTML = '<div id="app-status"></div>';
+
+      setAppStatus('Loading records...');
+
+      const banner = document.getElementById('app-status');
+      expect(banner.textContent).toBe('Loading records...');
+      expect(banner.className).toBe('status-banner info');
+    });
+
+    test('does not throw an error if the status banner element is missing from the DOM', () => {
+      document.body.innerHTML = '';
+
+      expect(() => {
+        setAppStatus('Error occurred', 'error');
+      }).not.toThrow();
+    });
+  });
 });
