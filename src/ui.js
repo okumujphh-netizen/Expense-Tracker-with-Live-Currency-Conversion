@@ -1,4 +1,5 @@
 
+import { formatCurrency } from './util.js';
 
 // Display the total expenses in the selected home currency
 export function renderTotal(total, homeCurrency = 'KES') {
@@ -6,7 +7,6 @@ export function renderTotal(total, homeCurrency = 'KES') {
 
     if (!totalElement) return;
 
-    // Avoid displaying a misleading total when conversion fails
     if (total === null || !Number.isFinite(total)) {
         totalElement.textContent = 'Unavailable';
         return;
@@ -27,7 +27,6 @@ export function renderExpenses(
 
     expenseList.replaceChildren();
 
-    // Display a message when there are no expenses
     if (!expenses || expenses.length === 0) {
         const row = document.createElement('tr');
         const cell = document.createElement('td');
@@ -43,24 +42,19 @@ export function renderExpenses(
     expenses.forEach((expense) => {
         const row = document.createElement('tr');
 
-        // Expense description
         const descriptionCell = document.createElement('td');
         descriptionCell.textContent = expense.description ?? '';
 
-        // Expense category
         const categoryCell = document.createElement('td');
         categoryCell.textContent = expense.category ?? '';
 
-        // Original amount and currency
         const originalCell = document.createElement('td');
         originalCell.textContent = formatCurrency(
             expense.amount,
             expense.currency
         );
 
-        // Amount converted into the selected home currency
         const convertedCell = document.createElement('td');
-
         const amount = Number(expense.amount);
         const homeRate = exchangeRates[homeCurrency];
         const expenseRate = exchangeRates[expense.currency];
@@ -82,7 +76,6 @@ export function renderExpenses(
             convertedCell.textContent = 'Unavailable';
         }
 
-        // Delete expense button
         const actionCell = document.createElement('td');
         const deleteButton = document.createElement('button');
 
@@ -93,7 +86,6 @@ export function renderExpenses(
 
         actionCell.appendChild(deleteButton);
 
-        // Add all cells to the row
         row.append(
             descriptionCell,
             categoryCell,
@@ -127,14 +119,12 @@ export function renderCategoryOptions(expenses) {
 
     categoryFilter.replaceChildren();
 
-    // Add the option to display every category
     const allOption = document.createElement('option');
     allOption.value = 'all';
     allOption.textContent = 'All categories';
 
     categoryFilter.appendChild(allOption);
 
-    // Add each unique category
     categories.forEach((category) => {
         const option = document.createElement('option');
 
@@ -144,13 +134,12 @@ export function renderCategoryOptions(expenses) {
         categoryFilter.appendChild(option);
     });
 
-    // Preserve the selected category when it still exists
     categoryFilter.value = categories.includes(selectedCategory)
         ? selectedCategory
         : 'all';
 }
 
-// Display the selected home currency in the currency selector
+// Display the selected home currency
 export function renderHomeCurrency(currency) {
     const currencySelect = document.getElementById('home-currency');
 
@@ -163,9 +152,19 @@ export function renderHomeCurrency(currency) {
 export function renderLoading(isLoading) {
     const loadingIndicator = document.getElementById('loading-indicator');
 
-    // The HTML currently may not include a loading indicator
     if (!loadingIndicator) return;
 
     loadingIndicator.hidden = !isLoading;
 }
 
+export function renderStatus(message, type = 'info') {
+    const statusBanner = document.getElementById('app-status');
+
+    if (!statusBanner) return;
+
+    const allowedTypes = ['info', 'success', 'error', 'warning'];
+    const statusType = allowedTypes.includes(type) ? type : 'info';
+
+    statusBanner.textContent = String(message);
+    statusBanner.className = `status-banner ${statusType}`;
+}
