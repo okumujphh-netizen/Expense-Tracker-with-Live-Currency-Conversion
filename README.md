@@ -24,7 +24,7 @@ A web application that helps users record, manage, and track their expenses in d
 
 ## Project Structure
 
-```text
+
 Expense-Tracker-with-Live-Currency-Conversion/
 ├── index.html
 ├── style.css
@@ -33,7 +33,7 @@ Expense-Tracker-with-Live-Currency-Conversion/
     ├── main.js
     ├── state.js
     └── util.js
-```
+
 
 ## Getting Started
 
