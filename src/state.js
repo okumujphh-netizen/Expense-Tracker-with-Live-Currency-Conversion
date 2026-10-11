@@ -65,7 +65,7 @@ export function addExpense(expenseData) {
   };
   state.expenses.push(newExpense);
   saveExpenses(state.expenses);
-  return newExpense;
+  return state.expenses;
 }
 
 export function deleteExpense(id) {
