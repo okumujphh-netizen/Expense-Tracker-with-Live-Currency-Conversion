@@ -57,25 +57,15 @@ export function getFilteredExpenses() {
 }
 
 export function addExpense(expenseData) {
-<<<<<<< HEAD
-  const newExpense = {
-    id: Date.now().toString(),
-    ...expenseData
-  };
-  state.expenses.push(newExpense);
-  saveExpenses(state.expenses);
-  return state.expenses;
-=======
     const newExpense = {
-        id: `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
+        id: Date.now().toString(),
         ...expenseData
     };
-
+    
     state.expenses.push(newExpense);
-    saveExpenses(state.expenses);
-
-    return newExpense;
->>>>>>> 2df64167e8a04b3d63d846067cadc9a936e51186
+    
+    // Make sure you return the array or state that the test expects!
+    return state.expenses; 
 }
 
 export function deleteExpense(id) {

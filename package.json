@@ -20,11 +20,7 @@
   "license": "ISC",
   "devDependencies": {
     "eslint": "^9.0.0",
-<<<<<<< HEAD
-    "jest": "^29.7.0"
-=======
     "jest": "^29.7.0",
     "jest-environment-jsdom": "^29.7.0"
->>>>>>> 2df64167e8a04b3d63d846067cadc9a936e51186
   }
 }
