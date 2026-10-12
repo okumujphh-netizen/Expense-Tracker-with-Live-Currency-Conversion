@@ -1,64 +1,63 @@
-// state.js - Central application state management
 
-import { 
-  getStoredExpenses, 
-  saveExpenses, 
-  getStoredHomeCurrency, 
-  saveHomeCurrency 
+import {
+    getStoredExpenses,
+    saveExpenses,
+    getStoredHomeCurrency,
+    saveHomeCurrency
 } from './util.js';
 
-// Central state object holding app data
+// Central application state
 const state = {
-  expenses: getStoredExpenses(),
-  homeCurrency: getStoredHomeCurrency(),
-  selectedCategory: 'all',
-  exchangeRates: {}
+    expenses: getStoredExpenses(),
+    homeCurrency: getStoredHomeCurrency(),
+    selectedCategory: 'all',
+    exchangeRates: {}
 };
 
-// --- Home Currency Getters/Setters ---
-
+// Home currency getters and setters
 export function getHomeCurrency() {
-  return state.homeCurrency;
+    return state.homeCurrency;
 }
 
 export function setHomeCurrency(currency) {
-  state.homeCurrency = currency;
-  saveHomeCurrency(currency);
+    state.homeCurrency = currency;
+    saveHomeCurrency(currency);
 }
 
 export function setExchangeRates(rates) {
-  state.exchangeRates = rates || {};
+    state.exchangeRates = rates || {};
 }
 
 export function getExchangeRates() {
-  return state.exchangeRates;
+    return state.exchangeRates;
 }
 
-// --- Category Filter Helpers ---
-
+// Category filter helpers
 export function getSelectedCategory() {
-  return state.selectedCategory;
+    return state.selectedCategory;
 }
 
 export function setSelectedCategory(category) {
-  state.selectedCategory = category;
+    state.selectedCategory = category;
 }
 
-// --- Expense Actions ---
-
+// Expense actions
 export function getExpenses() {
-  return state.expenses;
+    return state.expenses;
 }
 
-// Returns expenses filtered by selected category (matches #category-filter in index.html)
 export function getFilteredExpenses() {
-  if (state.selectedCategory === 'all') {
-    return state.expenses;
-  }
-  return state.expenses.filter(item => item.category === state.selectedCategory);
+    if (state.selectedCategory === 'all') {
+        return state.expenses;
+    }
+
+    return state.expenses.filter(
+        (item) => item.category === state.selectedCategory
+    );
 }
 
 export function addExpense(expenseData) {
+<<<<<<< HEAD
   const newExpense = {
     id: Date.now().toString(),
     ...expenseData
@@ -66,49 +65,80 @@ export function addExpense(expenseData) {
   state.expenses.push(newExpense);
   saveExpenses(state.expenses);
   return state.expenses;
+=======
+    const newExpense = {
+        id: `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
+        ...expenseData
+    };
+
+    state.expenses.push(newExpense);
+    saveExpenses(state.expenses);
+
+    return newExpense;
+>>>>>>> 2df64167e8a04b3d63d846067cadc9a936e51186
 }
 
 export function deleteExpense(id) {
-  state.expenses = state.expenses.filter(item => item.id !== id);
-  saveExpenses(state.expenses);
+    state.expenses = state.expenses.filter(
+        (item) => item.id !== id
+    );
+
+    saveExpenses(state.expenses);
 }
 
-// Converts an expense amount into the current home currency using loaded rates
+// Convert an expense amount into the selected home currency
 export function convertExpenseAmount(amount, expenseCurrency) {
-  const home = state.homeCurrency;
-  
-  // No conversion needed if currencies match
-  if (expenseCurrency === home) {
-    return amount;
-  }
+    const numericAmount = Number(amount);
 
-  const rates = state.exchangeRates;
-  if (!rates || !rates[expenseCurrency] || !rates[home]) {
-    return amount; // Fallback if exchange rates aren't loaded yet
-  }
+    if (!Number.isFinite(numericAmount) || numericAmount < 0) {
+        return null;
+    }
 
-  // Convert amount to base currency, then to target home currency
-  const amountInBase = amount / rates[expenseCurrency];
-  return amountInBase * rates[home];
+    // No conversion is needed for matching currencies
+    if (expenseCurrency === state.homeCurrency) {
+        return numericAmount;
+    }
+
+    const rates = state.exchangeRates;
+    const expenseRate = rates[expenseCurrency];
+    const homeRate = rates[state.homeCurrency];
+
+    // Return null when exchange rates are unavailable or invalid
+    if (
+        !Number.isFinite(expenseRate) ||
+        !Number.isFinite(homeRate) ||
+        expenseRate <= 0 ||
+        homeRate <= 0
+    ) {
+        return null;
+    }
+
+    return (numericAmount / expenseRate) * homeRate;
 }
 
-// --- Dashboard Summary Calculation ---
-
+// Dashboard summary statistics
 export function getSummaryStats() {
-  const filtered = getFilteredExpenses();
-  
-  // Calculate total converted sum across all recorded expenses
-  const totalAmount = state.expenses.reduce((sum, item) => {
-    return sum + convertExpenseAmount(Number(item.amount), item.currency);
-  }, 0);
+    const filtered = getFilteredExpenses();
 
-  // Count unique categories used across all expenses
-  const uniqueCategories = new Set(state.expenses.map(item => item.category)).size;
+    const convertedAmounts = state.expenses.map((item) =>
+        convertExpenseAmount(item.amount, item.currency)
+    );
 
-  return {
-    totalAmount: totalAmount,
-    totalCount: state.expenses.length,
-    visibleCount: filtered.length,
-    categoryCount: uniqueCategories
-  };
+    // Do not show an incomplete or misleading total
+    const totalAmount = convertedAmounts.every(
+        (amount) => amount !== null
+    )
+        ? convertedAmounts.reduce((sum, amount) => sum + amount, 0)
+        : null;
+
+    const uniqueCategories = new Set(
+        state.expenses.map((item) => item.category)
+    ).size;
+
+    return {
+        totalAmount,
+        totalCount: state.expenses.length,
+        visibleCount: filtered.length,
+        categoryCount: uniqueCategories
+    };
 }

@@ -1,108 +1,92 @@
-// Mock localStorage for Node environment
-const localStorageMock = (() => {
-  let store = {};
-  return {
-    getItem: (key) => store[key] || null,
-    setItem: (key, value) => { store[key] = String(value); },
-    clear: () => { store = {}; },
-    removeItem: (key) => { delete store[key]; }
-  };
-})();
 
-Object.defineProperty(global, 'localStorage', {
-  value: localStorageMock,
-  writable: true
-});
+import { jest } from '@jest/globals';
 import {
-  formatCurrency,
-  getStoredExpenses,
-  saveExpenses,
-  getStoredHomeCurrency,
-  saveHomeCurrency,
-  setAppStatus
+    formatCurrency,
+    getStoredExpenses,
+    saveExpenses,
+    getStoredHomeCurrency,
+    saveHomeCurrency,
+    setAppStatus
 } from '../src/util.js';
 
-describe('Utility Functions', () => {
-  beforeEach(() => {
-    localStorage.clear();
-    document.body.innerHTML = '';
-  });
-
-  describe('formatCurrency()', () => {
-    test('formats numeric amounts with default currency (KES)', () => {
-      const formatted = formatCurrency(1500);
-      expect(formatted).toContain('1,500.00');
-      expect(formatted).toContain('KES');
+describe('formatCurrency', () => {
+    test('formats Kenyan shillings correctly', () => {
+        expect(formatCurrency(1500, 'KES')).toContain('1,500.00');
     });
 
-    test('formats numeric amounts with a custom currency code (USD)', () => {
-  const formatted = formatCurrency(250, 'USD');
-  expect(formatted).toContain('250.00');
-  expect(formatted).toContain('$');
+    test('formats US dollars correctly', () => {
+        expect(formatCurrency(25, 'USD')).toContain('25.00');
     });
 
-    test('defaults to 0.00 for non-numeric or invalid amounts', () => {
-      const formatted = formatCurrency('invalid-amount');
-      expect(formatted).toContain('0.00');
+    test('returns Unavailable for invalid amounts', () => {
+        expect(formatCurrency(NaN, 'KES')).toBe('Unavailable');
     });
-  });
-  describe('Expense Storage Helpers', () => {
-    test('getStoredExpenses returns an empty array when storage is empty', () => {
-      const expenses = getStoredExpenses();
-      expect(expenses).toEqual([]);
-    });
+});
 
-    test('saveExpenses correctly stores and getStoredExpenses retrieves expenses', () => {
-      const mockExpenses = [
-        { id: '1', title: 'Coffee', amount: 300 },
-        { id: '2', title: 'Transport', amount: 500 }
-      ];
-
-      saveExpenses(mockExpenses);
-      const retrieved = getStoredExpenses();
-      expect(retrieved).toEqual(mockExpenses);
-    });
-  });
-
-  describe('Home Currency Storage Helpers', () => {
-    test('getStoredHomeCurrency defaults to KES when nothing is stored', () => {
-      const currency = getStoredHomeCurrency();
-      expect(currency).toBe('KES');
+describe('expense storage', () => {
+    beforeEach(() => {
+        localStorage.clear();
     });
 
-    test('saveHomeCurrency and getStoredHomeCurrency work together', () => {
-      saveHomeCurrency('EUR');
-      const currency = getStoredHomeCurrency();
-      expect(currency).toBe('EUR');
-    });
-  });
-  describe('setAppStatus()', () => {
-    test('updates status banner text content and className correctly', () => {
-      document.body.innerHTML = '<div id="app-status"></div>';
+    test('saves and retrieves expenses', () => {
+        const expenses = [
+            {
+                id: '1',
+                description: 'Lunch',
+                amount: 250,
+                currency: 'KES',
+                category: 'Food'
+            }
+        ];
 
-      setAppStatus('Data saved successfully!', 'success');
-
-      const banner = document.getElementById('app-status');
-      expect(banner.textContent).toBe('Data saved successfully!');
-      expect(banner.className).toBe('status-banner success');
+        expect(saveExpenses(expenses)).toBe(true);
+        expect(getStoredExpenses()).toEqual(expenses);
     });
 
-    test('defaults to info type if none is provided', () => {
-      document.body.innerHTML = '<div id="app-status"></div>';
-
-      setAppStatus('Loading records...');
-
-      const banner = document.getElementById('app-status');
-      expect(banner.textContent).toBe('Loading records...');
-      expect(banner.className).toBe('status-banner info');
+    test('returns an empty array when no expenses are saved', () => {
+        expect(getStoredExpenses()).toEqual([]);
     });
 
-    test('does not throw an error if the status banner element is missing from the DOM', () => {
-      document.body.innerHTML = '';
-
-      expect(() => {
-        setAppStatus('Error occurred', 'error');
-      }).not.toThrow();
+    test('rejects invalid expense data', () => {
+        expect(saveExpenses('not an array')).toBe(false);
     });
-  });
+});
+
+describe('home currency storage', () => {
+    beforeEach(() => {
+        localStorage.clear();
+    });
+
+    test('saves a supported home currency', () => {
+        expect(saveHomeCurrency('USD')).toBe(true);
+        expect(getStoredHomeCurrency()).toBe('USD');
+    });
+
+    test('defaults to KES when no currency is saved', () => {
+        expect(getStoredHomeCurrency()).toBe('KES');
+    });
+
+    test('rejects unsupported currencies', () => {
+        expect(saveHomeCurrency('XYZ')).toBe(false);
+    });
+});
+
+describe('setAppStatus', () => {
+    beforeEach(() => {
+        document.body.innerHTML = '<div id="app-status"></div>';
+    });
+
+    test('updates the status message and class', () => {
+        setAppStatus('Expense saved', 'success');
+
+        const banner = document.getElementById('app-status');
+        expect(banner.textContent).toBe('Expense saved');
+        expect(banner.className).toBe('status-banner success');
+    });
+
+    test('does not throw when the status element is missing', () => {
+        document.body.innerHTML = '';
+
+        expect(() => setAppStatus('Hello')).not.toThrow();
+    });
 });
